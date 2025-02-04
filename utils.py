@@ -55,10 +55,8 @@ def save_to_excel(data, file_path, sheet_name=None, append_mode=False):
     """Save data to Excel file. Data should be a list containing [initial_data, details_data]"""
     try:
         wb = create_or_load_excel(file_path)
-
         if sheet_name is None:
             sheet_name = datetime.now().strftime('%d_%m_%Y')
-
         # Get or create sheet
         if sheet_name in wb.sheetnames:
             if append_mode:
@@ -73,7 +71,6 @@ def save_to_excel(data, file_path, sheet_name=None, append_mode=False):
                 ws = wb.create_sheet(sheet_name)
         else:
             ws = wb.create_sheet(sheet_name)
-
         # If this is first entry in sheet or not appending, write initial data
         if ws.max_row <= 1 or not append_mode:
             for col, value in enumerate(data[0], 1):
@@ -82,16 +79,34 @@ def save_to_excel(data, file_path, sheet_name=None, append_mode=False):
         else:
             # Find next empty row for details
             next_row = ws.max_row + 1
-
         # Write details data
         for col, value in enumerate(data[1], 1):
             ws.cell(row=next_row, column=col, value=value)
-
         try:
             wb.save(file_path)
             return True, sheet_name
         except Exception as e:
             return False, f"Erro ao salvar arquivo: {str(e)}"
-
     except Exception as e:
         return False, f"Erro ao processar planilha: {str(e)}"
+
+def delete_row_from_excel(file_path, sheet_name, row_index):
+    """Delete a specific row from an Excel file."""
+    try:
+        # Read the existing data
+        df = pd.read_excel(file_path, sheet_name=sheet_name, header=0)
+        
+        # Check if the row index is valid
+        if row_index < 0 or row_index >= len(df):
+            return False, "Índice de linha inválido."
+        
+        # Drop the specified row
+        df = df.drop(index=row_index)
+        
+        # Save the updated data back to the Excel file
+        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+        
+        return True, "Linha excluída com sucesso."
+    except Exception as e:
+        return False, f"Erro ao excluir linha: {str(e)}"
