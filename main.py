@@ -12,20 +12,58 @@ st.set_page_config(
     layout="centered"
 )
 
-# Custom CSS
+# Custom CSS para melhorar o layout
 st.markdown("""
     <style>
-    .stButton>button {
-        width: 100%;
-    }
-    .stTextInput>div>div>input {
-        color: #000000;
-    }
-    .main {
+    /* Estilo geral */
+    .stApp {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
         padding: 2rem;
     }
+    /* Título principal */
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 2rem;
+    }
+    /* Subtítulo */
+    h3 {
+        color: #555;
+        margin-bottom: 1rem;
+    }
+    /* Formulário */
+    .stForm {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    /* Botões */
+    .stButton>button {
+        width: 100%;
+        margin: 0.5rem 0;
+        padding: 0.75rem;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+    /* Inputs */
+    .stTextInput>div>div>input,
+    .stDateInput>div>div>input {
+        padding: 0.75rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    /* Tabela */
+    .stTable {
+        margin-top: 2rem;
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 def initialize_excel_file(data):
     """Initialize a new Excel file with basic structure"""
@@ -53,8 +91,10 @@ def read_sheet_data(file_path, sheet_name):
 
 def main():
     st.title("📋 Gerenciador de Romaneio")
+
     # Lista de cidades disponíveis
     CIDADES = ["Paulínia", "Monte Mor", "Santo Antônio de Posse"]
+
     # Initialize session state
     if 'step' not in st.session_state:
         st.session_state.step = 1
@@ -71,31 +111,27 @@ def main():
 
     # Step 1: Cidade e Data
     if st.session_state.step == 1:
-        st.subheader("Informações Iniciais")
-        # Opção para carregar arquivo existente
+        st.subheader("📝 Informações Iniciais")
         uploaded_file = st.file_uploader("📂 Carregar Romaneio Existente", type=['xlsx'])
         if uploaded_file:
-            # Create temporary file and save uploaded content
             temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
             temp_file.write(uploaded_file.getvalue())
             temp_file.close()
             st.session_state.current_file = temp_file.name
-            # Carregar workbook para pegar a data da primeira aba
             wb = openpyxl.load_workbook(temp_file.name)
             sheet_name = wb.sheetnames[0]
             ws = wb[sheet_name]
             st.session_state.cidade = ws['A1'].value if ws['A1'].value in CIDADES else CIDADES[0]
             st.session_state.current_sheet = sheet_name
-            # Parse date from sheet name (format: dd_mm_yyyy)
             try:
                 st.session_state.data = datetime.strptime(sheet_name, '%d_%m_%Y').date()
             except:
                 st.session_state.data = datetime.now().date()
             st.session_state.step = 2
             st.rerun()
-        # Separador visual
+
         st.markdown("---")
-        st.subheader("Criar Novo Romaneio")
+        st.subheader("➕ Criar Novo Romaneio")
         with st.form("initial_form"):
             cidade = st.selectbox("Cidade", CIDADES, index=CIDADES.index(st.session_state.cidade))
             data_romaneio = st.date_input("Data do Romaneio", value=st.session_state.data, format="DD/MM/YYYY")
@@ -104,7 +140,6 @@ def main():
                 st.session_state.cidade = cidade
                 st.session_state.data = data_romaneio
                 if not st.session_state.current_file:
-                    # Create new Excel file only if not already loaded
                     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
                     temp_file.close()
                     wb = initialize_excel_file(data_romaneio)
@@ -116,21 +151,18 @@ def main():
 
     # Step 2: Detalhes do Romaneio
     elif st.session_state.step == 2:
-        st.subheader(f"Romaneio - {st.session_state.cidade}")
-        # Campo de data
-        nova_data = st.date_input("Data do Romaneio", value=st.session_state.data, format="DD/MM/YYYY")
-        # Update session state data when user changes the date
+        st.subheader(f"📋 Romaneio - {st.session_state.cidade}")
+        nova_data = st.date_input("📅 Data do Romaneio", value=st.session_state.data, format="DD/MM/YYYY")
         if nova_data != st.session_state.data:
             st.session_state.data = nova_data
             st.session_state.current_sheet = nova_data.strftime('%d_%m_%Y')
             st.rerun()
 
-        # Chave dinâmica para forçar a recriação dos widgets
         if 'widget_key' not in st.session_state:
             st.session_state.widget_key = 0
 
         with st.form(key=f"romaneio_form_{st.session_state.widget_key}"):
-            # Campos do formulário
+            st.markdown("#### 📝 Adicionar Item")
             numero_pedido = st.text_input(
                 "Número do Pedido",
                 placeholder="Digite o número do pedido",
@@ -147,12 +179,12 @@ def main():
             )
             payment_options = ["Dinheiro", "Cartão", "Boleto"]
             pagamento = st.selectbox(
-                "Forma de Pagamento",
+                "💳 Forma de Pagamento",
                 payment_options,
                 key=f"pagamento_{st.session_state.widget_key}"
             )
             valor = st.text_input(
-                "Valor a Pagar (R$)",
+                "💰 Valor a Pagar (R$)",
                 placeholder="0,00",
                 key=f"valor_{st.session_state.widget_key}"
             )
@@ -181,10 +213,8 @@ def main():
                 if error:
                     st.error(error)
                     return
-                # Prepare data
                 initial_data = [st.session_state.cidade, nova_data.strftime('%d/%m/%Y')]
                 details_data = [numero_pedido, revendedor, pagamento, f"R$ {valor_float:.2f}"]
-                # Save to Excel
                 success, message = save_to_excel(
                     [initial_data, details_data], 
                     st.session_state.current_file,
@@ -192,46 +222,40 @@ def main():
                     append_mode=True
                 )
                 if success:
-                    st.success("Item adicionado com sucesso!")
-                    
-                    # Incrementa a chave dinâmica para forçar a recriação dos widgets
+                    st.success("✅ Item adicionado com sucesso!")
                     st.session_state.widget_key += 1
-
-                    # Força a interface a recarregar
                     st.rerun()
                 else:
-                    st.error(f"Erro ao salvar: {message}")
+                    st.error(f"❌ Erro ao salvar: {message}")
             elif submitted_save:
-                st.success("Romaneio salvo com sucesso!")
+                st.success("✅ Romaneio salvo com sucesso!")
                 st.session_state.show_download = True
-                    
+
         # Display current sheet data
         st.markdown("---")
         st.subheader("📋 Itens Adicionados")
         df = read_sheet_data(st.session_state.current_file, st.session_state.current_sheet)
         if df is not None and not df.empty:
-            # Exibir tabela formatada com botões de exclusão
+            # Exibir todas as linhas em uma única tabela
             st.write("**Tabela de Itens Adicionados:**")
             for i, row in df.iterrows():
                 cols = st.columns([4, 1])  # Colunas para os dados e o botão
                 with cols[0]:
-                    # Exibir linha como tabela
                     st.table(pd.DataFrame([row]))
                 with cols[1]:
                     if st.button(f"❌ Excluir {i}", key=f"delete_{i}"):
-                        # Remove a linha correspondente
                         success, message = delete_row_from_excel(
                             st.session_state.current_file,
                             st.session_state.current_sheet,
                             i
                         )
                         if success:
-                            st.success(f"Linha {i + 1} excluída com sucesso!")
+                            st.success(f"✅ Linha {i + 1} excluída com sucesso!")
                             st.rerun()
                         else:
-                            st.error(f"Erro ao excluir linha {i + 1}: {message}")
+                            st.error(f"❌ Erro ao excluir linha {i + 1}: {message}")
         else:
-            st.info("Nenhum item adicionado ainda.")
+            st.info("ℹ️ Nenhum item adicionado ainda.")
 
         # Download button outside the form
         if st.session_state.show_download:
