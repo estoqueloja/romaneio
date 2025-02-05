@@ -9,7 +9,7 @@ import openpyxl
 # Configuração da página
 st.set_page_config(
     page_title="Gerenciador de Romaneio",
-    page_icon="📋",
+    page_icon="generated-icon.png",
     layout="wide"  # Alterado para "wide" para melhor uso do espaço
 )
 
