@@ -15,14 +15,6 @@ st.set_page_config(
 
 # Custom CSS para melhorar o layout
 st.markdown("""
-<style>
-    .stButton button {
-        margin: 5px 0;
-    }
-    .stTable {
-        font-size: 12px;
-    }
-</style>
 """, unsafe_allow_html=True)
 
 def initialize_excel_file(data):
@@ -39,8 +31,8 @@ def read_sheet_data(file_path, sheet_name):
         # Verifica se a aba existe no arquivo. Se não, retorna None.
         if sheet_name not in wb.sheetnames:
             return None
-        # Se a aba existe, lê os dados
-        df = pd.read_excel(file_path, sheet_name=sheet_name, header=0)
+        # Lê os dados, pulando a primeira linha (cabeçalho).
+        df = pd.read_excel(file_path, sheet_name=sheet_name, header=None, skiprows=1)
         if not df.empty:
             return df
     except Exception as e:
@@ -49,8 +41,6 @@ def read_sheet_data(file_path, sheet_name):
     return None
 
 def main():
-    st.title("📋 Gerenciador de Romaneio")
-    
     # Lista de cidades disponíveis
     CIDADES = ["Paulínia", "Monte Mor", "Santo Antônio de Posse"]
     
@@ -67,7 +57,7 @@ def main():
         st.session_state.data = datetime.now().date()  # Data atual
     if 'current_sheet' not in st.session_state:
         st.session_state.current_sheet = None
-    
+
     # Etapa 1: Informações Iniciais
     if st.session_state.step == 1:
         st.subheader("📝 Informações Iniciais")
@@ -122,11 +112,10 @@ def main():
                 wb = initialize_excel_file(data_romaneio)
                 wb.save(temp_file.name)
                 st.session_state.current_file = temp_file.name
-                
                 st.session_state.current_sheet = data_romaneio.strftime('%d_%m_%Y')
                 st.session_state.step = 2
                 st.rerun()
-    
+
     # Etapa 2: Detalhes do Romaneio
     elif st.session_state.step == 2:
         st.subheader(f"📋 Romaneio - {st.session_state.cidade}")
@@ -155,17 +144,20 @@ def main():
                     if numero_pedido and not numero_pedido.isdigit():
                         st.error("O número do pedido deve conter apenas números.")
                         return
+                    
                     revendedor = st.text_input(
                         "Nome do Revendedor",
                         placeholder="Digite o nome do revendedor",
                         key=f"revendedor_{st.session_state.widget_key}"
                     )
+                    
                     payment_options = ["Dinheiro", "Cartão", "Boleto"]
                     pagamento = st.selectbox(
                         "💳 Forma de Pagamento",
                         payment_options,
                         key=f"pagamento_{st.session_state.widget_key}"
                     )
+                    
                     valor = st.text_input(
                         "💰 Valor a Pagar (R$)",
                         placeholder="0,00",
@@ -227,13 +219,13 @@ def main():
             with st.expander("📋 Itens Adicionados", expanded=True):
                 df = read_sheet_data(st.session_state.current_file, st.session_state.current_sheet)
                 if df is not None and not df.empty:
+                    # Remove linhas vazias
+                    df = df.dropna(how='all')
                     for i, row in df.iterrows():
                         cols = st.columns([4, 1])  # Proporção ajustada para melhor uso do espaço
                         with cols[0]:
-                            st.table(pd.DataFrame([row]).style.set_table_styles([
-                                {'selector': 'th', 'props': [('font-size', '12px')]},
-                                {'selector': 'td', 'props': [('font-size', '12px')]}
-                            ]))
+                            # Exibe a tabela sem cabeçalho
+                            st.write(pd.DataFrame([row]).to_html(index=False, header=False), unsafe_allow_html=True)
                         with cols[1]:
                             if st.button(f"❌", key=f"delete_{i}", use_container_width=True):
                                 success, message = delete_row_from_excel(
@@ -258,16 +250,10 @@ def main():
                     file_name=f"Romaneio_{st.session_state.cidade}.xlsx",
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
-
+        
         # Injetar JavaScript para focar automaticamente no campo "Número do Pedido"
         if submitted_add:
             st.markdown("""
-            <script>
-                const inputField = window.parent.document.querySelector('input[id^="numero_pedido"]');
-                if (inputField) {
-                    inputField.focus();
-                }
-            </script>
             """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
