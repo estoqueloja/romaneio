@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import os
-from utils import validate_currency, validate_date, save_to_excel
+from utils import validate_currency, validate_date, save_to_excel, delete_row_from_excel
 import tempfile
 import openpyxl
 
@@ -210,9 +210,29 @@ def main():
         st.subheader("📋 Itens Adicionados")
         df = read_sheet_data(st.session_state.current_file, st.session_state.current_sheet)
         if df is not None and not df.empty:
-            st.dataframe(df, hide_index=True)
+            # Exibir tabela formatada com botões de exclusão
+            st.write("**Tabela de Itens Adicionados:**")
+            for i, row in df.iterrows():
+                cols = st.columns([4, 1])  # Colunas para os dados e o botão
+                with cols[0]:
+                    # Exibir linha como tabela
+                    st.table(pd.DataFrame([row]))
+                with cols[1]:
+                    if st.button(f"❌ Excluir {i}", key=f"delete_{i}"):
+                        # Remove a linha correspondente
+                        success, message = delete_row_from_excel(
+                            st.session_state.current_file,
+                            st.session_state.current_sheet,
+                            i
+                        )
+                        if success:
+                            st.success(f"Linha {i + 1} excluída com sucesso!")
+                            st.rerun()
+                        else:
+                            st.error(f"Erro ao excluir linha {i + 1}: {message}")
         else:
             st.info("Nenhum item adicionado ainda.")
+
         # Download button outside the form
         if st.session_state.show_download:
             with open(st.session_state.current_file, 'rb') as f:
