@@ -28,7 +28,7 @@ div[data-testid="stHorizontalBlock"] {
 
 /* Estilização opcional para o formulário */
 div.stButton > button {
-    background-color: #4CAF50; /* Botões verdes */
+    background-color: #6dbf88; /* Botões verdes */
     color: white;
     border-radius: 5px;
     padding: 10px 20px;
