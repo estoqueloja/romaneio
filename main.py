@@ -13,10 +13,35 @@ st.set_page_config(
     layout="wide"  # Alterado para "wide" para melhor uso do espaço
 )
 
-# Custom CSS para melhorar o layout
+# Custom CSS para alterar a cor de fundo da página
 st.markdown("""
 <style>
-/* Estilização personalizada, se necessário */
+/* Altera a cor de fundo da página inteira */
+body {
+    background-color: #f0f2f6; /* Substitua pela cor desejada */
+}
+
+/* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
+div[data-testid="stHorizontalBlock"] {
+    background-color: transparent !important;
+}
+
+/* Estilização opcional para o formulário */
+div.stButton > button {
+    background-color: #4CAF50; /* Botões verdes */
+    color: white;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+/* Estilização para mensagens de erro */
+div.stAlert > div {
+    background-color: #ffebee; /* Fundo rosa claro para erros */
+    color: #c62828; /* Texto vermelho */
+    padding: 10px;
+    border-radius: 5px;
+}
 </style>
 """, unsafe_allow_html=True)
 
