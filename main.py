@@ -18,29 +18,12 @@ st.markdown("""
 <style>
 /* Altera a cor de fundo da página inteira */
 body {
-    background-color: #82ad8d; /* Substitua pela cor desejada */
+    background-color: #f0f2f6; /* Substitua pela cor desejada */
 }
 
 /* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
 div[data-testid="stHorizontalBlock"] {
     background-color: transparent !important;
-}
-
-/* Estilização opcional para o formulário */
-div.stButton > button {
-    background-color: #6dbf88; /* Botões verdes */
-    color: white;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-/* Estilização para mensagens de erro */
-div.stAlert > div {
-    background-color: #ffebee; /* Fundo rosa claro para erros */
-    color: #c62828; /* Texto vermelho */
-    padding: 10px;
-    border-radius: 5px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -199,7 +182,14 @@ def main():
                     with col2:
                         submitted_save = st.form_submit_button("💾 Salvar")
                     with col3:
-                        submitted_home = st.form_submit_button("🔄 Tela Inicial")
+                        if st.form_submit_button("🔄 Tela Inicial"):
+                            # Resetar completamente o estado da sessão
+                            st.session_state.step = 1
+                            st.session_state.current_file = None
+                            st.session_state.current_sheet = None
+                            st.session_state.show_download = False
+                            st.session_state.widget_key = 0
+                            st.rerun()
 
                     # Lógica para cada botão
                     if submitted_add:
@@ -236,15 +226,6 @@ def main():
                     elif submitted_save:
                         st.success("✅ Romaneio salvo com sucesso!")
                         st.session_state.show_download = True
-
-                    elif submitted_home:
-                        # Resetar completamente o estado da sessão
-                        st.session_state.step = 1
-                        st.session_state.current_file = None
-                        st.session_state.current_sheet = None
-                        st.session_state.show_download = False
-                        st.session_state.widget_key = 0
-                        st.rerun()
 
         # Coluna Direita - Itens Adicionados
         with col_items:
