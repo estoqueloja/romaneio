@@ -18,11 +18,21 @@ st.markdown("""
 <style>
 /* Altera a cor de fundo da página inteira */
 body {
-    background-color: #f0f2f6; /* Substitua pela cor desejada */
+    background-color: #7CA384; /* Cor desejada */
 }
 
 /* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
 div[data-testid="stHorizontalBlock"] {
+    background-color: transparent !important;
+}
+
+/* Remove o fundo branco dos elementos principais */
+div[data-testid="stForm"] {
+    background-color: transparent !important;
+}
+
+/* Remove o fundo branco dos blocos de texto */
+div[data-testid="stMarkdownContainer"] {
     background-color: transparent !important;
 }
 </style>
