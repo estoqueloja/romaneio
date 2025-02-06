@@ -28,12 +28,12 @@ div[data-testid="stHorizontalBlock"] {
 
 /* Remove o fundo branco dos elementos principais */
 div[data-testid="stForm"] {
-    background-color: transparent !important;
+    background-color: black !important;
 }
 
 /* Remove o fundo branco dos blocos de texto */
 div[data-testid="stMarkdownContainer"] {
-    background-color: transparent !important;
+    background-color: blue !important;
 }
 
 /* Remove o fundo branco dos widgets */
