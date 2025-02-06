@@ -17,7 +17,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] {
-    background-color: #0e1117; /* Fundo escuro */
+    background-color: #7CA384; /* Fundo escuro */
 </style>
 """, unsafe_allow_html=True)
 
