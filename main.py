@@ -5,16 +5,28 @@ import os
 from utils import validate_currency, validate_date, save_to_excel, delete_row_from_excel
 import tempfile
 import openpyxl
+import streamlit as st
 
 # Configuração da página
 st.set_page_config(
     page_title="Gerenciador de Romaneio",
     page_icon="📋",
-    layout="wide"  # Alterado para "wide" para melhor uso do espaço
+    layout="wide"
 )
 
-# Custom CSS para melhorar o layout
+# Custom CSS para alterar a cor de fundo da página
 st.markdown("""
+<style>
+/* Altera a cor de fundo da página inteira */
+body {
+    background-color: #f0f2f6; /* Substitua pela cor desejada */
+}
+
+/* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
+div[data-testid="stHorizontalBlock"] {
+    background-color: transparent !important;
+}
+</style>
 """, unsafe_allow_html=True)
 
 def initialize_excel_file(data):
