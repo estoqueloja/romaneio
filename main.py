@@ -18,7 +18,7 @@ st.markdown("""
 <style>
 /* Altera a cor de fundo da página inteira */
 body {
-    background-color: #f0f2f6; /* Substitua pela cor desejada */
+    background-color: #82ad8d; /* Substitua pela cor desejada */
 }
 
 /* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
