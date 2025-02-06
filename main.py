@@ -15,6 +15,10 @@ st.set_page_config(
 
 # Custom CSS para melhorar o layout
 st.markdown("""
+<style>
+[data-testid="stAppViewContainer"] {
+    background-color: #0e1117; /* Fundo escuro */
+</style>
 """, unsafe_allow_html=True)
 
 def initialize_excel_file(data):
