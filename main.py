@@ -16,8 +16,33 @@ st.set_page_config(
 # Custom CSS para melhorar o layout
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] {
-    background-color: white; /* Fundo escuro */
+/* Estilização para o expander "Adicionar Item" */
+div[data-testid="stExpander"] div[aria-expanded="true"] {
+    background-color: #e8f5e9; /* Verde claro para o fundo */
+    border: 2px solid #2e7d32; /* Borda verde escuro */
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 10px; /* Espaçamento interno */
+}
+
+/* Estilização para o expander "Itens Adicionados" */
+div[data-testid="stExpander"] div[aria-expanded="false"] {
+    background-color: #ffebee; /* Rosa claro para o fundo */
+    border: 2px solid #c62828; /* Borda vermelha */
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 10px; /* Espaçamento interno */
+}
+
+/* Cor do texto dos títulos dos expanders */
+div[data-testid="stExpander"] summary {
+    color: #1b5e20; /* Verde escuro para "Adicionar Item" */
+    font-weight: bold; /* Negrito */
+}
+
+/* Cor do texto dos títulos dos expanders (Itens Adicionados) */
+div[data-testid="stExpander"] summary:nth-of-type(2) {
+    color: #b71c1c; /* Vermelho escuro para "Itens Adicionados" */
+    font-weight: bold; /* Negrito */
+}
 </style>
 """, unsafe_allow_html=True)
 
