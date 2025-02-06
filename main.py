@@ -23,7 +23,7 @@ body {
 
 /* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
 div[data-testid="stHorizontalBlock"] {
-    background-color: transparent !important;
+    background-color: red !important;
 }
 
 /* Remove o fundo branco dos elementos principais */
