@@ -137,88 +137,89 @@ def main():
         # Coluna Esquerda - Formulário
         with col_form:
             with st.expander("➕ Adicionar Item", expanded=True):
-                with st.form(key=f"romaneio_form_{st.session_state.widget_key}"):
-                    numero_pedido = st.text_input(
-                        "Número do Pedido",
-                        placeholder="Digite o número do pedido",
-                        max_chars=9,
-                        key=f"numero_pedido_{st.session_state.widget_key}"
-                    )
-                    if numero_pedido and not numero_pedido.isdigit():
-                        st.error("O número do pedido deve conter apenas números.")
-                        return
+with st.form(key=f"romaneio_form_{st.session_state.widget_key}"):
+    numero_pedido = st.text_input(
+        "Número do Pedido",
+        placeholder="Digite o número do pedido",
+        max_chars=9,
+        key=f"numero_pedido_{st.session_state.widget_key}"
+    )
+    if numero_pedido and not numero_pedido.isdigit():
+        st.error("O número do pedido deve conter apenas números.")
+        return
 
-                    revendedor = st.text_input(
-                        "Nome do Revendedor",
-                        placeholder="Digite o nome do revendedor",
-                        key=f"revendedor_{st.session_state.widget_key}"
-                    )
+    revendedor = st.text_input(
+        "Nome do Revendedor",
+        placeholder="Digite o nome do revendedor",
+        key=f"revendedor_{st.session_state.widget_key}"
+    )
 
-                    payment_options = ["Dinheiro", "Cartão", "Boleto"]
-                    pagamento = st.selectbox(
-                        "💳 Forma de Pagamento",
-                        payment_options,
-                        key=f"pagamento_{st.session_state.widget_key}"
-                    )
+    payment_options = ["Dinheiro", "Cartão", "Boleto"]
+    pagamento = st.selectbox(
+        "💳 Forma de Pagamento",
+        payment_options,
+        key=f"pagamento_{st.session_state.widget_key}"
+    )
 
-                    valor = st.text_input(
-                        "💰 Valor a Pagar (R$)",
-                        placeholder="0,00",
-                        key=f"valor_{st.session_state.widget_key}"
-                    )
+    valor = st.text_input(
+        "💰 Valor a Pagar (R$)",
+        placeholder="0,00",
+        key=f"valor_{st.session_state.widget_key}"
+    )
 
-                    # Botões alinhados horizontalmente
-                    col1, col2, col3 = st.columns([1, 1, 1])
-                    with col1:
-                        submitted_add = st.form_submit_button("➕ Adicionar")
-                    with col2:
-                        submitted_save = st.form_submit_button("💾 Salvar")
-                    with col3:
-                        submitted_home = st.form_submit_button("🔄 Tela Inicial")
+    # Botões alinhados horizontalmente
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col1:
+        submitted_add = st.form_submit_button("➕ Adicionar")
+    with col2:
+        submitted_save = st.form_submit_button("💾 Salvar")
+    with col3:
+        submitted_home = st.form_submit_button("🔄 Tela Inicial")  # Corrigido aqui
 
-                    if submitted_add:
-                        if not numero_pedido:
-                            st.error("Por favor, preencha o número do pedido.")
-                            return
-                        if len(numero_pedido) < 9:
-                            st.error("O número do pedido deve ter 9 dígitos.")
-                            return
-                        if not revendedor:
-                            st.error("Por favor, preencha o nome do revendedor.")
-                            return
-                        revendedor = revendedor.upper()
-                        valor_float, error = validate_currency(valor)
-                        if error:
-                            st.error(error)
-                            return
+    # Lógica para cada botão
+    if submitted_add:
+        if not numero_pedido:
+            st.error("Por favor, preencha o número do pedido.")
+            return
+        if len(numero_pedido) < 9:
+            st.error("O número do pedido deve ter 9 dígitos.")
+            return
+        if not revendedor:
+            st.error("Por favor, preencha o nome do revendedor.")
+            return
+        revendedor = revendedor.upper()
+        valor_float, error = validate_currency(valor)
+        if error:
+            st.error(error)
+            return
 
-                        initial_data = [st.session_state.cidade, nova_data.strftime('%d/%m/%Y')]
-                        details_data = [numero_pedido, revendedor, pagamento, f"R$ {valor_float:.2f}"]
-                        success, message = save_to_excel(
-                            [initial_data, details_data], 
-                            st.session_state.current_file,
-                            st.session_state.current_sheet,
-                            append_mode=True
-                        )
-                        if success:
-                            st.success("✅ Item adicionado com sucesso!")
-                            st.session_state.widget_key += 1
-                            st.rerun()
-                        else:
-                            st.error(f"❌ Erro ao salvar: {message}")
+        initial_data = [st.session_state.cidade, nova_data.strftime('%d/%m/%Y')]
+        details_data = [numero_pedido, revendedor, pagamento, f"R$ {valor_float:.2f}"]
+        success, message = save_to_excel(
+            [initial_data, details_data], 
+            st.session_state.current_file,
+            st.session_state.current_sheet,
+            append_mode=True
+        )
+        if success:
+            st.success("✅ Item adicionado com sucesso!")
+            st.session_state.widget_key += 1
+            st.rerun()
+        else:
+            st.error(f"❌ Erro ao salvar: {message}")
 
-                    elif submitted_save:
-                        st.success("✅ Romaneio salvo com sucesso!")
-                        st.session_state.show_download = True
+    elif submitted_save:
+        st.success("✅ Romaneio salvo com sucesso!")
+        st.session_state.show_download = True
 
-                    elif submitted_home:
-                        # Resetar completamente o estado da sessão
-                        st.session_state.step = 1
-                        st.session_state.current_file = None
-                        st.session_state.current_sheet = None
-                        st.session_state.show_download = False
-                        st.session_state.widget_key = 0
-                        st.rerun()
+    elif submitted_home:
+        # Resetar completamente o estado da sessão
+        st.session_state.step = 1
+        st.session_state.current_file = None
+        st.session_state.current_sheet = None
+        st.session_state.show_download = False
+        st.session_state.widget_key = 0
+        st.rerun()
 
         # Coluna Direita - Itens Adicionados
         with col_items:
