@@ -13,8 +13,21 @@ st.set_page_config(
     layout="wide"  # Alterado para "wide" para melhor uso do espaço
 )
 
-# Custom CSS para melhorar o layout
+# Custom CSS e JavaScript para bloquear letras no campo "Número do Pedido"
 st.markdown("""
+<script>
+// Função para permitir apenas números em um campo de entrada
+function allowOnlyNumbers(inputElement) {
+    inputElement.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+}
+// Aplicar a função ao carregar a página
+document.addEventListener('DOMContentLoaded', function () {
+    const inputs = document.querySelectorAll('.number-only');
+    inputs.forEach(input => allowOnlyNumbers(input));
+});
+</script>
 <style>
 /* Estilização personalizada, se necessário */
 </style>
@@ -138,12 +151,26 @@ def main():
         with col_form:
             with st.expander("➕ Adicionar Item", expanded=True):
                 with st.form(key=f"romaneio_form_{st.session_state.widget_key}"):
+                    # Campo "Número do Pedido" com validação JavaScript
                     numero_pedido = st.text_input(
                         "Número do Pedido",
                         placeholder="Digite o número do pedido",
                         max_chars=9,
                         key=f"numero_pedido_{st.session_state.widget_key}"
                     )
+                    # Adiciona a classe 'number-only' para aplicar o JavaScript
+                    st.markdown(
+                        f"""
+                        <script>
+                        const input = document.querySelector('input[id^="{f'numero_pedido_{st.session_state.widget_key}'}"]');
+                        if (input) {{
+                            input.classList.add('number-only');
+                        }}
+                        </script>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
                     if numero_pedido and not numero_pedido.isdigit():
                         st.error("O número do pedido deve conter apenas números.")
                         return
