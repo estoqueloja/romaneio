@@ -18,7 +18,7 @@ st.markdown("""
 <style>
 /* Altera a cor de fundo da página inteira */
 body {
-    background-color: #7CA384; /* Cor desejada */
+    background-color: #7CA384 !important; /* Cor desejada */
 }
 
 /* Garante que o conteúdo dentro das colunas mantenha o estilo padrão */
@@ -34,6 +34,11 @@ div[data-testid="stForm"] {
 /* Remove o fundo branco dos blocos de texto */
 div[data-testid="stMarkdownContainer"] {
     background-color: transparent !important;
+}
+
+/* Remove o fundo branco dos widgets */
+div[data-testid="stTextInput"], div[data-testid="stDateInput"], div[data-testid="stSelectbox"] {
+    background-color: white !important; /* Fundo branco apenas para inputs */
 }
 </style>
 """, unsafe_allow_html=True)
